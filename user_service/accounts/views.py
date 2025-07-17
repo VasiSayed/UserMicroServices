@@ -20,16 +20,16 @@ from rest_framework.response import Response
 
 from .models import User, UserAccess, UserAccessRole
 
-PROJECT_SERVICE_URL = "http://192.168.1.28:8001"
-ORG_SERVICE_URL = "http://192.168.1.28:8002"
-CHECKLIST_SERVICE_URL = "http://192.168.1.28:8005"
-USER_SERVICE_URL = "http://192.168.1.28:8000"
+PROJECT_SERVICE_URL = "https://konstruct.world/projects/"  
+ORG_SERVICE_URL = "https://konstruct.world/organizations/"
+USER_SERVICE_URL = "https://konstruct.world/users/"
+CHECKLIST_SERVICE_URL = "https://konstruct.world/checklists/"
 
 
 def fetch_checklist_analytics(user_id, project_id, role, auth_token):
     try:
         resp = requests.get(
-            f"{CHECKLIST_SERVICE_URL}/api/checklist-analytics/",
+            f"{CHECKLIST_SERVICE_URL}/checklist-analytics/",
             params={"user_id": user_id, "project_id": project_id, "role": role},
             headers={"Authorization": f"Bearer {auth_token}"},
             timeout=5,
@@ -43,7 +43,7 @@ def fetch_checklist_analytics(user_id, project_id, role, auth_token):
 def fetch_org_project_user_summary(auth_token):
     try:
         resp = requests.get(
-            f"{PROJECT_SERVICE_URL}/api/org-project-user-summary/",
+            f"{PROJECT_SERVICE_URL}/org-project-user-summary/",
             headers={"Authorization": f"Bearer {auth_token}"},
             timeout=5,
         )
@@ -65,12 +65,12 @@ class UserDashboardAPIView(APIView):
             total_makers = UserAccessRole.objects.filter(role="MAKER").count()
             total_checkers = UserAccessRole.objects.filter(role="CHECKER").count()
             try:
-                projects_resp = requests.get(f"{PROJECT_SERVICE_URL}/api/projects/", headers={"Authorization": f"Bearer {auth_token}"}, timeout=5)
+                projects_resp = requests.get(f"{PROJECT_SERVICE_URL}/projects/", headers={"Authorization": f"Bearer {auth_token}"}, timeout=5)
                 total_projects = len(projects_resp.json())
             except Exception:
                 total_projects = None
             try:
-                checklists_resp = requests.get(f"{CHECKLIST_SERVICE_URL}/api/checklists/", headers={"Authorization": f"Bearer {auth_token}"}, timeout=5)
+                checklists_resp = requests.get(f"{CHECKLIST_SERVICE_URL}/checklists/", headers={"Authorization": f"Bearer {auth_token}"}, timeout=5)
                 total_checklists = len(checklists_resp.json())
             except Exception:
                 total_checklists = None
@@ -88,7 +88,7 @@ class UserDashboardAPIView(APIView):
 
         elif user.is_client:
             try:
-                projects_resp = requests.get(f"{PROJECT_SERVICE_URL}/api/projects/?created_by={user.id}", headers={"Authorization": f"Bearer {auth_token}"}, timeout=5)
+                projects_resp = requests.get(f"{PROJECT_SERVICE_URL}/projects/?created_by={user.id}", headers={"Authorization": f"Bearer {auth_token}"}, timeout=5)
                 user_projects = projects_resp.json()
             except Exception:
                 user_projects = []
@@ -121,7 +121,7 @@ class UserDashboardAPIView(APIView):
         company_count = 0
         entity_count = 0
         try:
-            org_resp = requests.get(f"{ORG_SERVICE_URL}/api/organizations/?created_by={user.id}", headers={"Authorization": f"Bearer {auth_token}"}, timeout=5)
+            org_resp = requests.get(f"{ORG_SERVICE_URL}/organizations/?created_by={user.id}", headers={"Authorization": f"Bearer {auth_token}"}, timeout=5)
             if org_resp.ok: org_count = len(org_resp.json())
         except Exception: pass
 
